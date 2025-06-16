@@ -103,6 +103,7 @@ def format_entry(name, entry):
 
 TARGET_HOURS = [1, 8, 14, 19]
 
+
 async def get_weather_full():
     url = (f"https://api.openweathermap.org/data/2.5/forecast?q={LOCATION}"
            f"&appid={OPENWEATHER_API_KEY}&units=metric&lang=ru")
@@ -204,7 +205,6 @@ async def get_weather_full():
 
     except Exception as e:
         return f"⚠️ Ошибка при получении погоды: {e}"
-
 
 
 async def send_weather_to_all(app):
@@ -343,7 +343,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             size_mb = os.path.getsize(rar_file) / (1024 * 1024)
             if size_mb > 50:
-                await update.message.reply_text(f"⚠️ Файл слишком большой ({size_mb:.2f} MB). Максимальный размер — 50MB.")
+                await update.message.reply_text(
+                    f"⚠️ Файл слишком большой ({size_mb:.2f} MB). Максимальный размер — 50MB.")
                 return
 
             with open(rar_file, 'rb') as doc:
@@ -374,6 +375,5 @@ async def main():
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())
-
-
