@@ -10,6 +10,7 @@ from telegram.request import HTTPXRequest
 from rarfile import RarFile
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime, timedelta
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 nest_asyncio.apply()
 
@@ -21,7 +22,8 @@ LOCATION = "polyarny,ru"  # город для OpenWeatherMap, маленьким
 menu_keyboard = [
     ["График мастеров", "График диспетчеров"],
     ["Полезные номера", "Полезная информация"],
-    ["Прошивки оборудования", "Прогноз погоды"]
+    ["Прошивки оборудования", "Прогноз погоды"],
+
 ]
 reply_markup = ReplyKeyboardMarkup(menu_keyboard, resize_keyboard=True)
 
@@ -306,13 +308,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 Хазова Н.В. +79212730712
 Дубик А.Е. +79113223779
 
-ГФС: <a href="tel:88003013638">88003013638</a>
+ГФС: <a href="tel:+78003013638">+78003013638</a>
 (доб.625 ДЕНИС ЕВГЕНЬЕВИЧ МИШИН)
-ПОДДЕРЖКА КИТ: <a href="tel:88001000107">88001000107</a> (КМУТ)
-ПОДДЕРЖКА ЦКИЗ: <a href="tel:88003019927">88003019927</a> (КРИПТОШЛЮЗ)
-ПОДДЕРЖКА: <a href="tel:88003010212">8800-301-02-12</a>
-ПОДДЕРЖКА Т2: <a href="tel:88003006611">8800-300-6611</a> (доб.6611)
-""",
+ПОДДЕРЖКА КИТ: <a href="tel:+78001000107">+78001000107</a> (КМУТ)
+ПОДДЕРЖКА ЦКИЗ: <a href="tel:+78003019927">+78003019927</a> (КРИПТОШЛЮЗ)
+ПОДДЕРЖКА: <a href="tel:+78003010212">+7800-301-02-12</a>
+ПОДДЕРЖКА Т2: <a href="tel:+78003006611">+7800-300-6611</a> (доб.6611)
+"""
     }
 
     photo_mapping = {
@@ -321,11 +323,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Полезная информация": "info.jpg"
     }
 
+
     if text == "Прогноз погоды":
         weather = await get_weather_full()
         await update.message.reply_text(weather, parse_mode="HTML")
     elif text in text_responses:
-        await update.message.reply_text(text_responses[text])
+        # Здесь добавлен parse_mode='HTML' для корректного отображения ссылок
+        await update.message.reply_text(text_responses[text], parse_mode='HTML')
     elif text in photo_mapping:
         filename = photo_mapping[text]
         try:
