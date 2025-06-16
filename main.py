@@ -179,22 +179,18 @@ async def main():
     scheduler.add_job(send_weather_to_all, 'cron', hour=8, minute=0, args=[app])
     scheduler.start()
 
-    # Для Render: используем webhook
     PORT = int(os.environ.get("PORT", 8000))
     WEBHOOK_URL = f"https://srv-d17ttj6mcj7s73ca5brg.onrender.com/{BOT_TOKEN}"
 
     print(f"Запуск webhook на порту {PORT}, URL: {WEBHOOK_URL}")
 
-    await app.start_webhook(
+    # Запускаем webhook
+    await app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
-        webhook_path=f"/{BOT_TOKEN}",
-        url_path=f"/{BOT_TOKEN}",
-        webhook_url=WEBHOOK_URL,
+        url_path=BOT_TOKEN,          # без слэша впереди!
+        webhook_url=WEBHOOK_URL
     )
-
-    # Чтобы бот не завершался
-    await app.updater.idle()
 
 if __name__ == "__main__":
     import asyncio
