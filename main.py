@@ -238,7 +238,7 @@ async def extract(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         files = os.listdir(extract_dir)
         msg = "✅ Архив успешно распакован. Файлы:\n" + "\n".join(files)
-        await update.message.reply_text(msg)
+        await update.message.reply_text(msg, parse_mode='HTML')
 
     except Exception as e:
         await update.message.reply_text(f"⚠️ Ошибка при распаковке: {e}")
