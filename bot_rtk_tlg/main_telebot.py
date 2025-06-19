@@ -8,8 +8,8 @@ from rarfile import RarFile
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests
 from datetime import datetime, timedelta
-from get_weather_from_accu import get_weather_full
-from get_weather_from_openweathermap_sync import get_weather_full
+from git_weather_accu_sync import  get_weather_full
+#from get_weather_from_openweathermap_sync import get_weather_full
 
 BOT_TOKEN = '8058971937:AAFjf3Gc9tCX5jpl3-0eM6qfCf7TEW10SsU'
 USERS_FILE = "users.txt"
@@ -178,13 +178,40 @@ def handle_message(message):
     elif text in text_responses:
         bot.send_message(message.chat.id, text_responses[text], parse_mode="HTML")
 
+
+    elif text == "График мастеров":
+
+        photo_files = ["masters1.jpg", "masters2.jpg"]  # Укажи свои реальные имена файлов
+
+        for idx, photo_name in enumerate(photo_files, start=1):
+
+            if os.path.exists(photo_name):
+
+                with open(photo_name, 'rb') as photo:
+
+                    caption = f"График мастеров ({idx}/{len(photo_files)})"
+
+                    bot.send_photo(message.chat.id, photo, caption=caption)
+
+            else:
+
+                bot.send_message(message.chat.id, f"❌ Картинка {photo_name} не найдена.")
+
+
     elif text in photo_mapping:
+
         filename = photo_mapping[text]
+
         if os.path.exists(filename):
+
             with open(filename, 'rb') as photo:
+
                 bot.send_photo(message.chat.id, photo, caption=text)
+
         else:
+
             bot.send_message(message.chat.id, "❌ Картинка не найдена.")
+
 
     elif text == "Прошивки оборудования":
         rar_file = "D-link 1.0.7.tar"

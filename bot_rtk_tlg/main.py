@@ -12,7 +12,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime, timedelta
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from get_weather_from_accu import ACCUWEATHER_API_KEY
-from get_weather_from_accu import *
+from get_weather_accu_sunc import *
 from get_weather_from_openweathermap import *
 
 nest_asyncio.apply()
@@ -229,7 +229,7 @@ async def get_weather_full():
 
 async def send_weather_to_all(app):
     # weather = await get_weather_full()
-    weather = await get_weather_full()
+    weather = await get_weather_accu_sunc()
 
     message = f"🌅 Доброе утро мир! Сегодня нас ожидает такая погода:\n\n{weather}"
     for user_id in load_users():
