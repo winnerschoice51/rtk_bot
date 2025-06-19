@@ -11,13 +11,31 @@ from rarfile import RarFile
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime, timedelta
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+from get_weather_from_accu import ACCUWEATHER_API_KEY
+from get_weather_from_accu import *
+from get_weather_from_openweathermap import *
 
 nest_asyncio.apply()
 
 BOT_TOKEN = '8058971937:AAFjf3Gc9tCX5jpl3-0eM6qfCf7TEW10SsU'
 USERS_FILE = "users.txt"
-OPENWEATHER_API_KEY = '1e7c14d84797330a8636a5b6fdee8f36'
-LOCATION = "polyarny,ru"  # город для OpenWeatherMap, маленькими буквами
+import sys
+
+# Список админов (тебя и, возможно, других)
+ADMINS = {7606152113}  # сюда впиши свои ID Telegram
+
+
+async def restart(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    if user_id not in ADMINS:
+        await update.message.reply_text("❌ У вас нет прав для выполнения этой команды.")
+        return
+
+    await update.message.reply_text("♻️ Перезапускаю бота...")
+
+    # Завершаем процесс, чтобы watcher мог запустить заново
+    sys.exit(0)
+
 
 menu_keyboard = [
     ["График мастеров", "График диспетчеров"],
@@ -210,8 +228,10 @@ async def get_weather_full():
 
 
 async def send_weather_to_all(app):
+    # weather = await get_weather_full()
     weather = await get_weather_full()
-    message = f"🌅 Доброе утро! Сегодня нас ожидает такая погода:\n\n{weather}"
+
+    message = f"🌅 Доброе утро мир! Сегодня нас ожидает такая погода:\n\n{weather}"
     for user_id in load_users():
         try:
             await app.bot.send_message(chat_id=user_id, text=message, parse_mode="HTML")
@@ -368,6 +388,7 @@ async def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("extract", extract))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.add_handler(CommandHandler("restart", restart))
 
     scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
     scheduler.add_job(send_weather_to_all, 'cron', hour=7, minute=30, args=[app])
@@ -378,14 +399,11 @@ async def main():
 
 
 if __name__ == "__main__":
-    # import asyncio
-    #
-    # asyncio.run(main())
-
     import os
     import sys
 
-    pidfile = "/tmp/telegram_bot.pid"
+    pid_dir = os.getenv('TEMP', '.')  # или можно указать другую папку, например '.' — текущую
+    pidfile = os.path.join(pid_dir, 'telegram_bot.pid')
 
     if os.path.exists(pidfile):
         print("Already running.")
@@ -395,9 +413,8 @@ if __name__ == "__main__":
         f.write(str(os.getpid()))
 
     try:
-        # Запуск бота
         import asyncio
 
-        asyncio.run(main())  # или main() без asyncio
+        asyncio.run(main())
     finally:
         os.remove(pidfile)

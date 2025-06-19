@@ -1,4 +1,10 @@
+import asyncio
+
 import aiohttp
+from pyexpat.errors import messages
+
+OPENWEATHER_API_KEY = '1e7c14d84797330a8636a5b6fdee8f36'
+LOCATION = "polyarny,ru"  # город для OpenWeatherMap, маленькими буквами
 
 
 async def get_weather_full():
@@ -32,3 +38,8 @@ async def get_weather_full():
             )
 
             return message
+
+
+if __name__ == '__main__':
+    result = asyncio.run(get_weather_full())
+    print(result)
