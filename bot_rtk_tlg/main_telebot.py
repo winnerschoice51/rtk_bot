@@ -75,6 +75,23 @@ def weather_icon(weather_id):
 TARGET_HOURS = [1, 8, 14, 19]
 
 
+@bot.message_handler(commands=['stop'])
+def stop_bot(message):
+    if message.chat.id not in ADMINS:
+        bot.send_message(message.chat.id, "❌ У вас нет прав для этой команды.")
+        return
+
+    bot.send_message(message.chat.id, "🛑 Бот останавливается по команде администратора...")
+
+    pid_dir = os.getenv('TEMP', '.')
+    pidfile = os.path.join(pid_dir, 'telegram_bot.pid')
+    if os.path.exists(pidfile):
+        os.remove(pidfile)
+
+    # Корректно завершаем бота
+    os.kill(os.getpid(), signal.SIGINT)
+
+
 def send_weather_to_all():
     weather = get_weather_full()
     message = f"🌅 Доброе утро мир! Сегодня нас ожидает такая погода:\n\n{weather}"
@@ -200,7 +217,7 @@ if __name__ == "__main__":
 
     if os.path.exists(pidfile):
         print("Already running.")
-        sys.exit()
+        # sys.exit()
 
     with open(pidfile, "w") as f:
         f.write(str(os.getpid()))
