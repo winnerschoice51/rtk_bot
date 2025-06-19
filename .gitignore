@@ -168,7 +168,6 @@ atlassian-ide-plugin.xml
 
 # SonarLint plugin
 .idea/sonarlint/
-.idea/
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
@@ -183,4 +182,4 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # idea folder, uncomment if you don't need it
-# .idea
+.idea
